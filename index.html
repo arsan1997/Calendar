@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🌙 Ramadan Calendar Wallpaper Generator</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&family=Fredoka+One&family=Libre+Baskerville:ital@1&family=Baloo+2:wght@400;600;700;800&family=Kanit:wght@400;600;700&family=Prompt:wght@400;600;700&family=Sarabun:wght@400;600;700&family=IBM+Plex+Sans+Thai:wght@400;600;700&family=Mitr:wght@400;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     TOP BAR
+═══════════════════════════════════════════ -->
+<header class="topbar">
+  <div class="topbar-brand">
+    <span class="brand-moon">🌙</span>
+    <span class="brand-text">Ramadan Calendar <em>Generator</em></span>
+  </div>
+  <div class="topbar-actions">
+    <button id="btnExportPng" class="btn-export">⬇ Export PNG</button>
+    <button id="btnExportJpg" class="btn-export secondary">⬇ Export JPEG</button>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════
+     MAIN LAYOUT
+═══════════════════════════════════════════ -->
+<main class="workspace">
+
+  <!-- ─── LEFT SIDEBAR ─────────────────── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-scroll">
+
+            <!-- Section: Data -->
+      <section class="panel">
+        <h3 class="panel-title">📡 ข้อมูลเวลาละหมาด</h3>
+        <label>จังหวัด / Province
+          <select id="selectProvince">
+            <option value="songkhla">สงขลา</option>
+            <option value="pattani">ปัตตานี</option>
+            <option value="yala">ยะลา</option>
+            <option value="narathiwat">นราธิวาส</option>
+            <option value="satun">สตูล</option>
+            <option value="phuket">ภูเก็ต</option>
+            <option value="trang">ตรัง</option>
+            <option value="phatthalung">พัทลุง</option>
+            <option value="krabi">กระบี่</option>
+            <option value="surat_thani">สุราษฎร์ธานี</option>
+            <option value="bangkok">กรุงเทพมหานคร</option>
+            <option value="chiangmai">เชียงใหม่</option>
+          </select>
+        </label>
+        <label>อำเภอ / District
+          <select id="selectDistrict">
+            <option value="hatyai">หาดใหญ่</option>
+          </select>
+        </label>
+        <div id="coordInfo" class="coord-info"></div>
+        <button id="btnFetchData" class="btn-primary full">🔄 โหลดข้อมูล (19 ก.พ.–20 มี.ค. 2569)</button>
+        <div id="dataStatus" class="status-msg"></div>
+      </section>
+
+      <!-- Section: Size -->
+      <section class="panel">
+        <h3 class="panel-title">📐 ขนาดวอลล์เปเปอร์</h3>
+        <div class="size-presets">
+          <button class="preset-btn active" data-w="1080" data-h="1920">Phone 9:16</button>
+          <button class="preset-btn" data-w="1080" data-h="2400">Tall 9:20</button>
+          <button class="preset-btn" data-w="1920" data-h="1080">Desktop</button>
+          <button class="preset-btn" data-w="1080" data-h="1080">Square</button>
+        </div>
+        <div class="row-2">
+          <label>W (px)<input type="number" id="canvasW" value="1080" min="400" max="4000" /></label>
+          <label>H (px)<input type="number" id="canvasH" value="1920" min="400" max="6000" /></label>
+        </div>
+        <button id="btnApplySize" class="btn-secondary full">Apply Size</button>
+      </section>
+
+      <!-- Section: Theme -->
+      <section class="panel">
+        <h3 class="panel-title">🎨 ธีม / Theme</h3>
+        <div class="theme-grid">
+          <button class="theme-card active" data-theme="pastel">
+            <span class="theme-preview pastel-prev"></span>
+            <span>Pastel Ramadan</span>
+          </button>
+          <button class="theme-card" data-theme="dark">
+            <span class="theme-preview dark-prev"></span>
+            <span>Dark Islamic</span>
+          </button>
+          <button class="theme-card" data-theme="minimal">
+            <span class="theme-preview minimal-prev"></span>
+            <span>Minimal White</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Section: Text -->
+      <section class="panel">
+        <h3 class="panel-title">✏️ แก้ไขข้อความ</h3>
+        <label>ชื่อหัวเรื่อง (Title)
+          <input type="text" id="inputTitle" value="Ramadan 2026" />
+        </label>
+        <label>ชื่อเมือง (Location)
+          <input type="text" id="inputLocation" value="HATYAI" />
+        </label>
+        <label>ดุอาอ์ซูฮูร (Suhoor Dua)
+          <textarea id="inputDuaSuhoor" rows="2">وَيْتُ صَوْمَ غَدٍ عَنْ أَدَاءِ فَرْضِ شَهْرِ رَمَضَانَ هٰذِهِ السَّنَةِ لِلّٰهِ تَعَالَ</textarea>
+        </label>
+        <label>ดุอาอ์อิฟตาร (Iftar Dua)
+          <textarea id="inputDuaIftar" rows="2">اللّٰهُمَّ لَكَ صُمْتُ وَبِكَ آمَنْتُ وَعَلَيْكَ تَوَكَّلْتُ وَعَلَى رِزْقِكَ أَفْطَرْتُ</textarea>
+        </label>
+        <label>ฉลากวันหยุด (Day Labels)
+          <input type="text" id="inputDayLabels" value="อา,จ,อ,พ,พฤ,ศ,ส" />
+        </label>
+      </section>
+
+      <!-- Section: Background -->
+      <section class="panel">
+        <h3 class="panel-title">🖼 พื้นหลัง / Background</h3>
+        <label>ประเภท
+          <select id="bgType">
+            <option value="gradient">Gradient</option>
+            <option value="pattern">Islamic Pattern</option>
+            <option value="image">Upload Image</option>
+          </select>
+        </label>
+        <div id="bgGradientOpts">
+          <div class="row-2">
+            <label>Color 1<input type="color" id="bgColor1" value="#fde8f0" /></label>
+            <label>Color 2<input type="color" id="bgColor2" value="#fdf6e3" /></label>
+          </div>
+          <label>Direction
+            <select id="bgGradientDir">
+              <option value="vertical">Vertical</option>
+              <option value="horizontal">Horizontal</option>
+              <option value="diagonal">Diagonal</option>
+            </select>
+          </label>
+        </div>
+        <div id="bgImageOpts" style="display:none">
+          <label>Upload<input type="file" id="bgImageUpload" accept="image/*" /></label>
+          <label>Overlay Opacity
+            <input type="range" id="bgOverlay" min="0" max="100" value="30" />
+          </label>
+        </div>
+        <div id="bgPatternOpts" style="display:none">
+          <label>Pattern Color<input type="color" id="patternColor" value="#c9a96e" /></label>
+          <label>Opacity
+            <input type="range" id="patternOpacity" min="5" max="60" value="15" />
+          </label>
+        </div>
+        <label class="toggle-label">
+          <input type="checkbox" id="showGeometric" checked />
+          Show Geometric Overlay
+        </label>
+      </section>
+
+      <!-- Section: Card style -->
+      <section class="panel">
+        <h3 class="panel-title">🃏 รูปแบบการ์ด</h3>
+        <label>Card Color<input type="color" id="cardColor" value="#f9c8d8" /></label>
+        <label>Card Opacity
+          <input type="range" id="cardOpacity" min="40" max="100" value="90" />
+        </label>
+        <label>Border Radius (%)
+          <input type="range" id="cardRadius" min="10" max="50" value="35" />
+        </label>
+        <label>Show Suhoor/Iftar Icons
+          <input type="checkbox" id="showIcons" checked />
+        </label>
+      </section>
+
+      <!-- Section: Font -->
+      <section class="panel">
+        <h3 class="panel-title">🔤 ฟอนต์ / Font</h3>
+        <label>ฟอนต์ตัวเลขหลัก (เลขรอมฎอน)
+          <select id="fontRamadan">
+            <option value="'Baloo 2', cursive">Baloo 2 ✦ (แนะนำ)</option>
+            <option value="'Fredoka One', cursive" selected>Fredoka One</option>
+            <option value="'Kanit', sans-serif">Kanit</option>
+            <option value="'Prompt', sans-serif">Prompt</option>
+            <option value="'Mitr', sans-serif">Mitr</option>
+            <option value="'Noto Sans Thai', sans-serif">Noto Sans Thai</option>
+            <option value="Arial, sans-serif">Arial</option>
+          </select>
+        </label>
+        <label>ฟอนต์ข้อความทั่วไป (เวลา/เดือน)
+          <select id="fontBody">
+            <option value="'Noto Sans Thai', sans-serif" selected>Noto Sans Thai</option>
+            <option value="'Sarabun', sans-serif">Sarabun</option>
+            <option value="'IBM Plex Sans Thai', sans-serif">IBM Plex Sans Thai</option>
+            <option value="'Kanit', sans-serif">Kanit</option>
+            <option value="'Prompt', sans-serif">Prompt</option>
+            <option value="'Mitr', sans-serif">Mitr</option>
+          </select>
+        </label>
+        <label>ฟอนต์หัวเรื่อง (Title)
+          <select id="fontTitle">
+            <option value="'Fredoka One', cursive" selected>Fredoka One</option>
+            <option value="'Baloo 2', cursive">Baloo 2</option>
+            <option value="'Kanit', sans-serif">Kanit</option>
+            <option value="'Prompt', sans-serif">Prompt</option>
+            <option value="'Mitr', sans-serif">Mitr</option>
+            <option value="'Noto Sans Thai', sans-serif">Noto Sans Thai</option>
+          </select>
+        </label>
+        <div class="font-preview" id="fontPreview">
+          <span class="fp-num">١٥</span>
+          <span class="fp-body">05:20 • ก.พ.</span>
+          <span class="fp-title">Ramadan 2026</span>
+        </div>
+      </section>
+
+      <!-- Section: Card Layout -->
+      <section class="panel">
+        <h3 class="panel-title">📐 ขนาดและตำแหน่งการ์ด</h3>
+        <label>ความสูงการ์ด (Card Height)
+          <div class="slider-row">
+            <input type="range" id="cardHeight" min="100" max="260" value="155" />
+            <span class="slider-val" id="cardHeightVal">155px</span>
+          </div>
+        </label>
+        <label>ช่องว่างระหว่างการ์ด (Gap)
+          <div class="slider-row">
+            <input type="range" id="cardGap" min="2" max="24" value="8" />
+            <span class="slider-val" id="cardGapVal">8px</span>
+          </div>
+        </label>
+        <label>ขอบซ้าย-ขวา (Margin X)
+          <div class="slider-row">
+            <input type="range" id="cardMarginX" min="4" max="60" value="28" />
+            <span class="slider-val" id="cardMarginXVal">28px</span>
+          </div>
+        </label>
+        <label>เลื่อนปฏิทินขึ้น/ลง (Offset Y)
+          <div class="slider-row">
+            <input type="range" id="gridOffsetY" min="-200" max="200" value="0" />
+            <span class="slider-val" id="gridOffsetYVal">0px</span>
+          </div>
+        </label>
+        <label>ขนาดเลขรอมฎอน (Number Size)
+          <div class="slider-row">
+            <input type="range" id="numFontSize" min="24" max="80" value="48" />
+            <span class="slider-val" id="numFontSizeVal">48px</span>
+          </div>
+        </label>
+        <label>ขนาดเวลา (Time Size)
+          <div class="slider-row">
+            <input type="range" id="timeFontSize" min="10" max="28" value="16" />
+            <span class="slider-val" id="timeFontSizeVal">16px</span>
+          </div>
+        </label>
+      </section>
+
+    </div><!-- /sidebar-scroll -->
+  </aside>
+
+  <!-- ─── CANVAS PREVIEW ────────────────── -->
+  <section class="preview-area">
+    <div class="preview-toolbar">
+      <button id="btnZoomOut">−</button>
+      <span id="zoomLabel">50%</span>
+      <button id="btnZoomIn">+</button>
+      <button id="btnZoomFit">Fit</button>
+      <label class="toggle-label" style="margin-left:auto">
+        <input type="checkbox" id="showMobileFrame" checked /> Phone Frame
+      </label>
+    </div>
+    <div class="canvas-stage" id="canvasStage">
+      <div class="mobile-frame" id="mobileFrame">
+        <div class="phone-notch"></div>
+        <div class="canvas-wrapper" id="canvasWrapper">
+          <canvas id="mainCanvas"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Loading overlay -->
+<div id="loadingOverlay" class="loading-overlay" style="display:none">
+  <div class="loading-spinner">🌙</div>
+  <p>กำลังโหลด...</p>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
